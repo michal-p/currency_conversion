@@ -1,12 +1,26 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import './App.css'
-import './components/Converter'
-import './components/Footer'
+import dataService from './services/data'
 import Converter from './components/Converter'
 import Statistics from './components/Statistics'
 import Footer from './components/Footer'
 
 function App() {
+  const [ currencies, setCurrencies ] = useState({}) 
+
+  useEffect(() => {
+    console.log('effect')
+    dataService
+      .getCurrencies()
+      .then(respond => {
+        console.log("effect data service respond: ", respond)
+        setCurrencies(respond)
+      }).catch(error => {
+        console.log("effect data service error: ", error)
+      })
+  }, [])
+
+
   return (
     <div className="App">
       <header className="App-header">
@@ -15,7 +29,7 @@ function App() {
       <main>
         <section>
           <h1>Converter</h1>
-          <Converter />
+          <Converter currencies={currencies}/>
         </section>
         <section className="statistics">
           <h1>Statistics</h1>
