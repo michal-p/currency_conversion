@@ -6,15 +6,15 @@ import Statistics from './components/Statistics'
 import Footer from './components/Footer'
 
 function App() {
-  const [ currencies, setCurrencies ] = useState({}) 
+  const [ currenciesList, setCurrenciesList ] = useState({})
+  // const [ currenciesLatest, setCurrenciesLatest ] = useState({})
 
   useEffect(() => {
-    console.log('effect')
     dataService
       .getCurrencies()
-      .then(respond => {
-        console.log("effect data service respond: ", respond)
-        setCurrencies(respond)
+      .then(response => {
+        console.log("effect data service respond: ", response)
+        setCurrenciesList(response)
       }).catch(error => {
         console.log("effect data service error: ", error)
       })
@@ -29,7 +29,7 @@ function App() {
       <main>
         <section>
           <h1>Converter</h1>
-          <Converter currencies={currencies}/>
+          <Converter currenciesList={currenciesList} dataService={dataService}/>
         </section>
         <section className="statistics">
           <h1>Statistics</h1>

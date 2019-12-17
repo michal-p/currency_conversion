@@ -3,11 +3,26 @@ const baseUrl = 'http://localhost:3001/api'
 
 const getCurrencies = () => {
 	const request = axios.get(`${baseUrl}/currencies`)
-	console.log("getAll promise fulfilled request: ", request)
 	return request.then(response => {
 		console.log("getAll promise fulfilled: ", response.data)
 		return response.data
 	})
 }
 
-export default { getCurrencies }
+const getLatest = () => {
+	const request = axios.get(`${baseUrl}/latest`)
+	return request.then(response => {
+		console.log("getLatest promise fulfilled: ", response.data)
+		return response.data
+	})
+}
+
+const convert = (newTransfer) => {
+	const request = axios.post(`${baseUrl}/convert`, newTransfer)
+	return request.then(response => {
+		console.log("convert promise fulfilled: ", response.data)
+		return response.data
+	})
+}
+
+export default { getCurrencies, getLatest, convert }
