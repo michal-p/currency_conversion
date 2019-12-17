@@ -15,12 +15,12 @@
 
 .App-header {
   background-color: #282c34;
-  min-height: 100vh;
+  /* min-height: 100vh; */
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
+  /* font-size: calc(10px + 2vmin); */
   color: white;
 }
 
@@ -35,4 +35,70 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+main {
+  display: flex;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
+  padding: 10px;
+}
+
+main section {
+  flex: 1 1 300px;
+  border: 1px solid gray;
+  border-radius: 6px;
+  margin: 0 10px;
+}
+
+main section.statistics {
+  /* width: 400px; */
+}
+
+form {
+}
+
+.line {
+  display: flex;
+}
+
+.line > * {
+  padding: 10px 20px;
+}
+
+input, select{
+  background: transparent;
+  border-radius: 6px;
+  border: 1px solid #DFE1E5;
+  font-size: 14px;
+  height: 2.5em;
+  padding: 0 12px;
+  margin: 0;
+  overflow: hidden;
+  width: 100%;
+  text-align: right;
+}
+
+select {
+  height: calc(2.5em + 2px);
+}
+
+input[type=submit] {
+  background-color: #86d18a;
+  text-align: center;
+}
+
+input[type=submit]:hover {
+  background-color: #45a049;
+}
+
+.col25 {
+  flex: 1 1 100px;
+}
+
+.col75 {
+  flex: 1 1 100px;
+}
+
+@media screen and (max-width: 600px) {
 }

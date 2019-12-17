@@ -1,26 +1,44 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from 'react'
+import './App.css'
+import dataService from './services/data'
+import Converter from './components/Converter'
+import Statistics from './components/Statistics'
+import Footer from './components/Footer'
 
 function App() {
+  const [ currencies, setCurrencies ] = useState({}) 
+
+  useEffect(() => {
+    console.log('effect')
+    dataService
+      .getCurrencies()
+      .then(respond => {
+        console.log("effect data service respond: ", respond)
+        setCurrencies(respond)
+      }).catch(error => {
+        console.log("effect data service error: ", error)
+      })
+  }, [])
+
+
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+        Currency conversion HEADER
       </header>
+      <main>
+        <section>
+          <h1>Converter</h1>
+          <Converter currencies={currencies}/>
+        </section>
+        <section className="statistics">
+          <h1>Statistics</h1>
+          <Statistics />
+        </section>
+      </main>
+      <Footer />
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
