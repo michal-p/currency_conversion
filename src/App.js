@@ -4,6 +4,7 @@ import dataServices from './services/data'
 import Converter from './components/Converter'
 import Statistics from './components/Statistics'
 import Footer from './components/Footer'
+import Notification from './components/Notification'
 
 function App() {
   const [ currenciesList, setCurrenciesList ] = useState({})
@@ -14,15 +15,26 @@ function App() {
     currencyTo: 'EUR',
     amountTo: 0
   })
+  const [notificationMessage, setNotificationMessage] = useState(null)
+  const [ type, setType ] = useState('note')
+
+  const showHideNotification = (message, type) => {
+    setNotificationMessage(message)
+    setType(type)
+    setTimeout(() => {
+      setNotificationMessage(null)
+    }, 5000);
+  }
 
   const getStatistics = () => {
     dataServices
       .getStatistics()
       .then(response => {
-        console.log("effect getStatistics service response: ", response)
+        // showHideNotification(`effect getStatistics service response: ${response}`, 'note')
         setStatistics(response)
-      }).catch(error => {
-        console.log("effect getStatistics service error: ", error)
+      })
+      .catch(error => {
+        showHideNotification(`effect getStatistics service error: ${error}`, 'error')
       })
   }
 
@@ -30,10 +42,11 @@ function App() {
     dataServices
       .getCurrencies()
       .then(response => {
-        console.log("effect getCurrencies service response: ", response)
+        // showHideNotification(`effect getCurrencies service response: ${response}`, 'note')
         setCurrenciesList(response)
-      }).catch(error => {
-        console.log("effect getCurrencies service error: ", error)
+      })
+      .catch(error => {
+        showHideNotification(`effect getCurrencies service error: ${error}`, 'error')
       })
   }, [])
 
@@ -59,17 +72,18 @@ function App() {
     dataServices
       .convert(newTransfer)
       .then(response => {
-        console.log("handleSubmit convert response: ", response)
         setConversion({
           currencyFrom: response.currencyFrom,
           amountFrom: response.amountFrom,
           currencyTo: response.currencyTo,
           amountTo: response.amountTo
         })
-      }).catch(error => {
-        console.log("handleSubmit convert error: ", error)
+        showHideNotification(`Saved to transfer to db: ${ JSON.stringify(conversion) }`, 'note')
+        getStatistics()
       })
-    getStatistics()
+      .catch(error => {
+        showHideNotification(`effect convert service error: ${error}`, 'error')
+      })
     event.preventDefault()
   }
 
@@ -88,6 +102,7 @@ function App() {
           <Statistics stats={statistics}/>
         </section>
       </main>
+      <Notification message={notificationMessage} type={type}/>
       <Footer />
     </div>
   )
