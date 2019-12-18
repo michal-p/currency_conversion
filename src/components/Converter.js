@@ -2,33 +2,38 @@ import React, { useState } from 'react'
 import CurrencySelect from './CurrencySelect'
 
 const Converter = ({ currenciesList, dataService }) => {
-  const [fromCurrency, setFromCurrency] = useState('EUR')
-  const [toCurrency, setToCurrency] = useState('CZK')
-  const [fromAmount, setFromAmount] = useState(0)
-  const [toAmount, setToAmount] = useState(0)
+  const [conversion, setConversion] = useState({
+    currencyFrom: 'EUR',
+    amountFrom: 0,
+    currencyTo: 'CZK',
+    amountTo: 0
+  })
 
   const handleFromChange = (event) => {
-    setFromCurrency(event.target.value)
+    setConversion({...conversion, currencyFrom: event.target.value})
   }
   const handleToChange = (event) => {
-    setToCurrency(event.target.value)
+    setConversion({...conversion, currencyTo: event.target.value})
   }
   const handleAmount = (event) => {
-    setFromAmount(event.target.value)
-    setToAmount('')
+    setConversion({...conversion, amountFrom: event.target.value, amountTo: ''})
   }
   const handleSubmit = (event) => {
     let newTransfer = {
-      fromCurrency,
-      toCurrency,
-      fromAmount
+      fromCurrency: conversion.currencyFrom,
+      toCurrency: conversion.currencyTo,
+      fromAmount: conversion.amountFrom
     }
     dataService
       .convert(newTransfer)
       .then(response => {
         console.log("handleSubmit convert response: ", response)
-        setToAmount(response.amountTo)
-        setFromAmount(response.amountFrom)
+        setConversion({
+          currencyFrom: response.currencyFrom,
+          amountFrom: response.amountFrom,
+          currencyTo: response.currencyTo,
+          amountTo: response.amountTo
+        })
       }).catch(error => {
         console.log("handleSubmit convert error: ", error)
       })
@@ -40,18 +45,18 @@ const Converter = ({ currenciesList, dataService }) => {
       <form onSubmit={handleSubmit}>
         <div className="line">
           <label className="col75">
-            <input value={fromAmount} type="number" onChange={handleAmount}/>
+            <input value={conversion.amountFrom} type="number" onChange={handleAmount}/>
           </label>
           <label className="col25">
-            <CurrencySelect selected={fromCurrency} handler={handleFromChange} currencies={currenciesList} />
+            <CurrencySelect selected={conversion.currencyFrom} handler={handleFromChange} currencies={currenciesList} />
           </label>
         </div>
         <div className="line">
           <label className="col75">
-            <input value={toAmount} type="number" readOnly/>
+            <input value={conversion.amountTo} type="number" readOnly/>
           </label>
           <label className="col25">
-            <CurrencySelect selected={toCurrency} handler={handleToChange} currencies={currenciesList} />
+            <CurrencySelect selected={conversion.currencyTo} handler={handleToChange} currencies={currenciesList} />
           </label>
         </div>
         <div className="line">

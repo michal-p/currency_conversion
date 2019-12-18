@@ -1,22 +1,33 @@
 import React, { useState, useEffect } from 'react'
 import './App.css'
-import dataService from './services/data'
+import dataServices from './services/data'
 import Converter from './components/Converter'
 import Statistics from './components/Statistics'
 import Footer from './components/Footer'
 
 function App() {
   const [ currenciesList, setCurrenciesList ] = useState({})
-  // const [ currenciesLatest, setCurrenciesLatest ] = useState({})
+  const [ statistics, setStatistics ] = useState({})
 
   useEffect(() => {
-    dataService
+    dataServices
       .getCurrencies()
       .then(response => {
-        console.log("effect data service respond: ", response)
+        console.log("effect getCurrencies service response: ", response)
         setCurrenciesList(response)
       }).catch(error => {
-        console.log("effect data service error: ", error)
+        console.log("effect getCurrencies service error: ", error)
+      })
+  }, [])
+
+  useEffect(() => {
+    dataServices
+      .getStatistics()
+      .then(response => {
+        console.log("effect getStatistics service response: ", response)
+        setStatistics(response)
+      }).catch(error => {
+        console.log("effect getStatistics service error: ", error)
       })
   }, [])
 
@@ -29,11 +40,11 @@ function App() {
       <main>
         <section>
           <h1>Converter</h1>
-          <Converter currenciesList={currenciesList} dataService={dataService}/>
+          <Converter currenciesList={currenciesList} dataService={dataServices}/>
         </section>
         <section className="statistics">
           <h1>Statistics</h1>
-          <Statistics />
+          <Statistics stats={statistics}/>
         </section>
       </main>
       <Footer />
