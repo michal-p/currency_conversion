@@ -92,6 +92,11 @@ input[type=submit]:hover {
   background-color: #45a049;
 }
 
+input:read-only {
+  background-color: #d0d2d8;
+  pointer-events: none;
+}
+
 .col25 {
   flex: 1 1 100px;
 }
