@@ -11,8 +11,8 @@ const Statistics = ({ stats }) => {
     <div style={statisticStyle}>
       <br />
       <p>Most popular destination currency <em>{stats.popular}</em></p>
-  <p>Total amount have been converted <em>{stats.amountConvertedInUSD}</em>USD</p>
-  <p>Total amount of requests <em>{stats.amountRequests}</em></p>
+      <p>Total amount have been converted <em>{stats.amountConvertedInUSD}</em>USD</p>
+      <p>Total amount of requests <em>{stats.amountRequests}</em></p>
     </div>
   )
 }

@@ -21,38 +21,24 @@ function App() {
   const showHideNotification = (message, type) => {
     setNotificationMessage(message)
     setType(type)
-    setTimeout(() => {
-      setNotificationMessage(null)
-    }, 5000);
+    setTimeout(() => setNotificationMessage(null), 5000)
   }
 
   const getStatistics = () => {
     dataServices
       .getStatistics()
-      .then(response => {
-        // showHideNotification(`effect getStatistics service response: ${response}`, 'note')
-        setStatistics(response)
-      })
-      .catch(error => {
-        showHideNotification(`effect getStatistics service error: ${error}`, 'error')
-      })
+      .then(response => setStatistics(response))
+      .catch(error => showHideNotification(`effect getStatistics service error: ${error}`, 'error'))
   }
 
   useEffect(() => {
     dataServices
       .getCurrencies()
-      .then(response => {
-        // showHideNotification(`effect getCurrencies service response: ${response}`, 'note')
-        setCurrenciesList(response)
-      })
-      .catch(error => {
-        showHideNotification(`effect getCurrencies service error: ${error}`, 'error')
-      })
+      .then(response => setCurrenciesList(response))
+      .catch(error => showHideNotification(`effect getCurrencies service error: ${error}`, 'error'))
   }, [])
 
-  useEffect(() => {
-    getStatistics()
-  }, [])
+  useEffect(() => getStatistics(), [])
 
   const handleFromChange = (event) => {
     setConversion({...conversion, currencyFrom: event.target.value})
@@ -81,9 +67,7 @@ function App() {
         showHideNotification(`Saved to transfer to db: ${ JSON.stringify(conversion) }`, 'note')
         getStatistics()
       })
-      .catch(error => {
-        showHideNotification(`effect convert service error: ${error}`, 'error')
-      })
+      .catch(error => showHideNotification(`effect convert service error: ${error}`, 'error'))
     event.preventDefault()
   }
 
