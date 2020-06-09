@@ -1,35 +1,25 @@
-import React, { useState } from 'react'
+import React from 'react'
 import CurrencySelect from './CurrencySelect'
 
-const Converter = ({ currencies }) => {
-  console.log("Converter currencies: ", currencies)
-  const [fromCurrency, setFromCurrency] = useState({})
-  const [toCurrency, setToCurrency] = useState({})
-
-  const handleFromChange = (event) => {
-    setFromCurrency(event.target.value)
-  }
-  const handleToChange = (event) => {
-    setToCurrency(event.target.value)
-  }
-
+const Converter = ({ currenciesList, conversion, handleSubmit, handleAmount, handleFromChange, handleToChange }) => {
+  
   return (
     <div>
-      <form onSubmit={() => console.log('submit')}>
+      <form onSubmit={handleSubmit}>
         <div className="line">
           <label className="col75">
-            <input name="amountFrom" type="number"/>
+            <input value={conversion.amountFrom} type="number" step="0.01" onChange={handleAmount}/>
           </label>
           <label className="col25">
-            <CurrencySelect selected={fromCurrency} handler={handleFromChange} currencies={currencies} />
+            <CurrencySelect selected={conversion.currencyFrom} handler={handleFromChange} currencies={currenciesList} />
           </label>
         </div>
         <div className="line">
           <label className="col75">
-            <input name="amountTo" type="number"/>
+            <input className="read" value={conversion.amountTo} type="number" readOnly/>
           </label>
           <label className="col25">
-            <CurrencySelect selected={toCurrency} handler={handleToChange} currencies={currencies} />
+            <CurrencySelect selected={conversion.currencyTo} handler={handleToChange} currencies={currenciesList} />
           </label>
         </div>
         <div className="line">
