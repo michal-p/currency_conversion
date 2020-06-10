@@ -1,6 +1,6 @@
 import React from 'react'
 
-const Converter = ({ currencies, handler, selected }) => {
+const CurrencySelect = ({ currencies, handler, selected }) => {
 
 
   return (
@@ -15,4 +15,4 @@ const Converter = ({ currencies, handler, selected }) => {
 	)
 }
 
-export default Converter
+export default CurrencySelect

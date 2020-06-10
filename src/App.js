@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import './App.css'
 import dataServices from './services/data'
 import Converter from './components/Converter'
@@ -7,86 +7,130 @@ import Footer from './components/Footer'
 import Notification from './components/Notification'
 
 function App() {
-  const [ currenciesList, setCurrenciesList ] = useState({})
-  const [ statistics, setStatistics ] = useState({})
-  const [ conversion, setConversion ] = useState({
-    currencyFrom: 'HUF',
-    amountFrom: 0,
+  const [currenciesList, setCurrenciesList] = useState({})
+  const [statistics, setStatistics] = useState({})
+  const [conversion, setConversion] = useState({
+    currencyFrom: 'CZK',
+    amountFrom: 1,
     currencyTo: 'EUR',
-    amountTo: 0
+    amountTo: 0,
   })
-  const [notificationMessage, setNotificationMessage] = useState(null)
-  const [ type, setType ] = useState('note')
+  const [query, setQuery] = useState({amountFrom: 1})
+  const [notificationMessage, setNotificationMessage] = useState('')
+  const [type, setType] = useState('note')
 
   const showHideNotification = (message, type) => {
     setNotificationMessage(message)
     setType(type)
-    setTimeout(() => setNotificationMessage(null), 5000)
+    setTimeout(() => setNotificationMessage(''), 5000)
   }
 
-  const getStatistics = () => {
-    dataServices
-      .getStatistics()
-      .then(response => setStatistics(response))
-      .catch(error => showHideNotification(`effect getStatistics service error: ${error}`, 'error'))
-  }
+  const getStatistics = useCallback(
+    () => {
+      dataServices
+        .getStatistics()
+        .then((response) => setStatistics(response))
+        .catch((error) =>
+          showHideNotification(
+            `effect getStatistics service error: ${error}`,
+            'error'
+          )
+        )
+    }, []
+  )
+
+  const getCurrencies = useCallback(
+    () => {
+      dataServices
+        .getCurrencies()
+        .then((response) => setCurrenciesList(response))
+        .catch((error) =>
+          showHideNotification(
+            `effect getCurrencies service error: ${error}`,
+            'error'
+          )
+        )
+    }, []
+  )
+
+  const handleSubmit = useCallback(
+    (newConversion = conversion, event) => {
+      let newTransfer = {
+        fromCurrency: newConversion.currencyFrom,
+        toCurrency: newConversion.currencyTo,
+        fromAmount: newConversion.amountFrom,
+      }
+      dataServices
+        .convert(newTransfer)
+        .then((response) => {
+          setConversion({
+            currencyFrom: response.currencyFrom,
+            amountFrom: response.amountFrom,
+            currencyTo: response.currencyTo,
+            amountTo: response.amountTo,
+          })
+          showHideNotification(
+            `Saved to transfer to db: ${JSON.stringify(conversion)}`,
+            'note'
+          )
+          getStatistics()
+        })
+        .catch((error) =>
+          showHideNotification(`effect convert service error: ${error}`, 'error')
+        )
+      if (event) {
+        event.preventDefault()
+      }
+    },[conversion, getStatistics]
+  )
 
   useEffect(() => {
-    dataServices
-      .getCurrencies()
-      .then(response => setCurrenciesList(response))
-      .catch(error => showHideNotification(`effect getCurrencies service error: ${error}`, 'error'))
-  }, [])
+    getCurrencies()
+    getStatistics()
+    handleSubmit()
+  }, [getCurrencies, getStatistics])
 
-  useEffect(() => getStatistics(), [])
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      handleSubmit({ ...conversion, ...query})
+    }, 800);
+    return () => {
+      clearTimeout(timer)
+    }
+  }, [query])
 
   const handleFromChange = (event) => {
-    setConversion({...conversion, currencyFrom: event.target.value})
+    handleSubmit({ ...conversion, currencyFrom: event.target.value })
   }
   const handleToChange = (event) => {
-    setConversion({...conversion, currencyTo: event.target.value})
+    handleSubmit({ ...conversion, currencyTo: event.target.value })
   }
   const handleAmount = (event) => {
-    setConversion({...conversion, amountFrom: event.target.value, amountTo: ''})
-  }
-  const handleSubmit = (event) => {
-    let newTransfer = {
-      fromCurrency: conversion.currencyFrom,
-      toCurrency: conversion.currencyTo,
-      fromAmount: conversion.amountFrom
-    }
-    dataServices
-      .convert(newTransfer)
-      .then(response => {
-        setConversion({
-          currencyFrom: response.currencyFrom,
-          amountFrom: response.amountFrom,
-          currencyTo: response.currencyTo,
-          amountTo: response.amountTo
-        })
-        showHideNotification(`Saved to transfer to db: ${ JSON.stringify(conversion) }`, 'note')
-        getStatistics()
-      })
-      .catch(error => showHideNotification(`effect convert service error: ${error}`, 'error'))
-    event.preventDefault()
+    setQuery({amountFrom: event.target.value})
   }
 
   return (
     <div className="App">
-      <header className="App-header">
-        Currency conversion HEADER
-      </header>
+      <header className="App-header">Currency conversion HEADER</header>
       <main>
         <section>
           <h1>Converter</h1>
-          <Converter currenciesList={currenciesList} conversion={conversion} handleSubmit={handleSubmit} handleAmount={handleAmount} handleFromChange={handleFromChange} handleToChange={handleToChange} />
+          <Converter
+            currenciesList={currenciesList}
+            conversion={conversion}
+            query={query}
+            handleSubmit={handleSubmit}
+            handleAmount={handleAmount}
+            handleFromChange={handleFromChange}
+            handleToChange={handleToChange}
+          />
         </section>
         <section className="statistics">
           <h1>Statistics</h1>
-          <Statistics stats={statistics}/>
+          <Statistics stats={statistics} />
         </section>
       </main>
-      <Notification message={notificationMessage} type={type}/>
+      <Notification message={notificationMessage} type={type} />
       <Footer />
     </div>
   )
